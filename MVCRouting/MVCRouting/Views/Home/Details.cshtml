@@ -1,0 +1,17 @@
+﻿@model Post
+@{
+}
+
+@if (Model != null)
+{
+    <article>
+        <h1>@Model.Title</h1>
+        <p>@Model.Content</p>
+        <footer>
+            @foreach (var tag in Model.PostTags)
+            {
+                <span>@tag.Tag.Name</span>
+            }
+        </footer>
+    </article>
+}

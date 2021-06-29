@@ -1,0 +1,13 @@
+﻿@model IEnumerable<Post>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div>
+    <ul>
+        @foreach (var post in Model)
+        {
+            <li>@Html.ActionLink(post.Title, "Details", "Home", new { articleName=post.Title }) </li>
+        }
+    </ul>
+</div>
