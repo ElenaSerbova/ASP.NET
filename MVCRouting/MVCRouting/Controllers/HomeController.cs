@@ -27,6 +27,7 @@ namespace MVCRouting.Controllers
         [Route("[controller]/[action]")]        
         public async Task<IActionResult> Index()
         {
+            _logger.Log(LogLevel.Information, "qqqqqqqqqqq");
             return View(await _blogContext.Posts.ToListAsync());
         }
 
