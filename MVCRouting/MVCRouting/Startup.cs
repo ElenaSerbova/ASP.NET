@@ -65,11 +65,17 @@ namespace MVCRouting
             {                                   // запускает делегат, связанный с выбранной конечной точкой.
 
                 endpoints.MapControllerRoute(
-                    name: "article",
-                    pattern: "atricle/{articleName}",
-                    defaults: new {controller="Home", action="Details"}
+                    name: "tagRoute",
+                    pattern: "tag/{tagName}",
+                    defaults: new {controller="Home", action = "GetByTag"}
                 );
                 
+                endpoints.MapControllerRoute(
+                    name: "article",
+                    pattern: "atricle/{articleName:slugify}",
+                    defaults: new { controller = "Home", action = "Details" }
+                );
+
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");

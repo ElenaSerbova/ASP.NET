@@ -13,7 +13,7 @@ namespace MVCRouting.Transformers
 
             return Regex.Replace(value.ToString(),
                                  @"\s",
-                                 "_",
+                                 "-",
                                  RegexOptions.CultureInvariant,
                                  TimeSpan.FromMilliseconds(100)).ToLowerInvariant();
         }

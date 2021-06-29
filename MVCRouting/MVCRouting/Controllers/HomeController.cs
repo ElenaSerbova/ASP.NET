@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MVCRouting.Controllers
@@ -21,17 +22,41 @@ namespace MVCRouting.Controllers
             _blogContext = blogContext;
         }
 
+        [Route("")]
+        [Route("Home")]
+        [Route("[controller]/[action]")]        
         public async Task<IActionResult> Index()
         {
             return View(await _blogContext.Posts.ToListAsync());
         }
 
+        [Route("article/{articleName:slugify}")]
+        [Route("post/{articleName:slugify}")]
         public async Task<IActionResult> Details(string articleName)
         {
+            string title = Regex.Replace(articleName,
+                                 @"-",
+                                 " ",
+                                 RegexOptions.CultureInvariant);                                
+
             return View(await _blogContext.Posts
                 .Include(p=>p.PostTags)
                 .ThenInclude(pt=>pt.Tag)
-                .FirstOrDefaultAsync(p=>p.Title == articleName));
+                .FirstOrDefaultAsync(p => p.Title.ToLower() == title));
+        }
+
+
+        [Route("tag/{tagName}")]
+        public async Task<IActionResult> GetByTag(string tagName)
+        {
+            var posts = _blogContext.Posts
+                .Include(p => p.PostTags)
+                .ThenInclude(pt => pt.Tag)
+                .SelectMany(p => p.PostTags
+                                    .Where(pt => pt.Tag.Name == tagName)
+                                    .Select(pt => pt.Post));
+                
+            return View("Index", posts);
         }
 
         public IActionResult Privacy()

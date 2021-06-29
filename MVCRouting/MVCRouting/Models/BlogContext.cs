@@ -15,9 +15,10 @@ namespace MVCRouting.Models
         public BlogContext(DbContextOptions<BlogContext> options)
            : base(options)
         {
-            Database.EnsureDeleted();
+            //Database.EnsureDeleted();
             Database.EnsureCreated();   // создаем базу данных при первом обращении
         }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -39,7 +40,8 @@ namespace MVCRouting.Models
                     Content="ASP.NET Core — свободно-распространяемый кросс-платформенный фреймворк " +
                     "для создания веб-приложений с открытым исходным кодом. Данная платформа " +
                     "разрабатывается компанией Майкрософт совместно с сообществом и имеет большую " +
-                    "производительность по сравнению с ASP.NET."
+                    "производительность по сравнению с ASP.NET.",
+                    DateTime=DateTime.Now
                 },
                 new Post {
                     Id=2,
@@ -48,6 +50,7 @@ namespace MVCRouting.Models
                     "хранящимся в базе данных или других источниках, основанных на платформе .NET " +
                     "Framework и входящая в состав .NET Framework 2.0, представляет собой набор " +
                     "библиотек.",
+                    DateTime=DateTime.Now
                 },
                 new Post {
                     Id=3,
@@ -56,6 +59,7 @@ namespace MVCRouting.Models
                     "доступа к данным, является object-relational mapping решением для .NET " +
                     "Framework от Microsoft. Предоставляет возможность взаимодействия с объектами " +
                     "как посредством LINQ в виде LINQ to Entities, так и с использованием Entity SQL.",
+                    DateTime=DateTime.Now
                 }
             };
 

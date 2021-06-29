@@ -10,7 +10,7 @@
         <footer>
             @foreach (var tag in Model.PostTags)
             {
-                <span>@tag.Tag.Name</span>
+               @Html.ActionLink(tag.Tag.Name, "GetByTag", "Home", new { tagName = tag.Tag.Name })
             }
         </footer>
     </article>
