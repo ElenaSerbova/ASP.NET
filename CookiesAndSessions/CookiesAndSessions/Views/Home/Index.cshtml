@@ -1,0 +1,10 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h2>Hello, @ViewBag?.Name</h2>
+    <p>@ViewBag?.Lang</p>
+
+    <p>Cart: @ViewBag?.Cart?.Count</p>
+</div>

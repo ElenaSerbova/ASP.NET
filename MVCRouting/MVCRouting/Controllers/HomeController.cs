@@ -27,8 +27,8 @@ namespace MVCRouting.Controllers
         [Route("[controller]/[action]")]        
         public async Task<IActionResult> Index()
         {
-            _logger.Log(LogLevel.Information, "qqqqqqqqqqq");
-            return View(await _blogContext.Posts.ToListAsync());
+            var posts = await _blogContext.Posts.ToListAsync();
+            return View(posts);
         }
 
         [Route("article/{articleName:slugify}")]
@@ -38,12 +38,14 @@ namespace MVCRouting.Controllers
             string title = Regex.Replace(articleName,
                                  @"-",
                                  " ",
-                                 RegexOptions.CultureInvariant);                                
+                                 RegexOptions.CultureInvariant);
 
-            return View(await _blogContext.Posts
-                .Include(p=>p.PostTags)
-                .ThenInclude(pt=>pt.Tag)
-                .FirstOrDefaultAsync(p => p.Title.ToLower() == title));
+            var post = await _blogContext.Posts
+                .Include(p => p.PostTags)
+                .ThenInclude(pt => pt.Tag)
+                .FirstOrDefaultAsync(p => p.Title.ToLower() == title);
+
+            return View(post);
         }
 
 
