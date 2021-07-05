@@ -3,6 +3,7 @@ using Authentication.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,11 +40,12 @@ namespace Authentication.Controllers
                     sha256.ComputeHash(Encoding.UTF8.GetBytes(model.Password)));
 
                 User user = _appContext.Users
+                    .Include(user=>user.Role)
                     .FirstOrDefault(u => u.Email == model.Email && u.Password == passwordHash);
             
                 if(user != null)
                 {
-                    await Authenticate(model.Email);
+                    await Authenticate(user);
                     return RedirectToAction("Index", "Home");
                 }
 
@@ -51,6 +53,13 @@ namespace Authentication.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync();
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
@@ -69,17 +78,27 @@ namespace Authentication.Controllers
                 var passwordHash = Convert.ToBase64String(
                     sha256.ComputeHash(Encoding.UTF8.GetBytes(model.Password)));
 
-                User user = _appContext.Users
-                    .FirstOrDefault(u => u.Email == model.Email && u.Password == passwordHash);
+                User user = await _appContext.Users
+                    .FirstOrDefaultAsync(u => u.Email == model.Email && u.Password == passwordHash);
 
                 if(user == null)
                 {
-                    _appContext.Users.Add(new User
+                    user = new User
                     {
                         Email = model.Email,
-                        Password = passwordHash
-                    });
+                        Password = passwordHash,
+                        Country = model.Country
+                    };
 
+                    Role roleUser = await _appContext.Roles
+                        .FirstOrDefaultAsync(role => role.Name == "user");
+
+                    if(roleUser != null)
+                    {
+                        user.Role = roleUser;
+                    }
+
+                    _appContext.Users.Add(user);
                     await _appContext.SaveChangesAsync();
                     return RedirectToAction("Login", "Account");
                 }
@@ -90,21 +109,23 @@ namespace Authentication.Controllers
         }
 
 
-        private async Task Authenticate(string email)
+        private async Task Authenticate(User user)
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, email)
+                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role?.Name),
+                new Claim("country", user.Country)
             };
 
-            ClaimsIdentity identity = new ClaimsIdentity(
+            ClaimsIdentity identity = new(
                 claims, 
                 "ApplicationCookie",
                 ClaimsIdentity.DefaultNameClaimType,
                 ClaimsIdentity.DefaultRoleClaimType
              );
 
-            ClaimsPrincipal principal = new ClaimsPrincipal(identity);
+            ClaimsPrincipal principal = new(identity);
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
         }

@@ -13,10 +13,12 @@ namespace Authentication.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private ApplicationContext _appContext;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, ApplicationContext appContext)
         {
             _logger = logger;
+            _appContext = appContext;
         }
 
         public IActionResult Index()
@@ -24,10 +26,16 @@ namespace Authentication.Controllers
             return View();
         }
 
-        [Authorize]
+        [Authorize(Roles = "admin")]
         public IActionResult Privacy()
         {
             return View();
+        }
+
+        [Authorize(Policy = "OnlyForUkraine")]
+        public IActionResult ForUkraine()
+        {
+            return Content("tratatatatata");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

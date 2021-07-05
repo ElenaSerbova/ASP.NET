@@ -36,7 +36,16 @@ namespace Authentication
                 .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options => {
                     options.LoginPath = new PathString("/Account/Login");
+                    options.AccessDeniedPath = new PathString("/Account/Login");
                 });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("OnlyForUkraine", policy =>
+                {
+                    policy.RequireClaim("country", "Ukraine");
+                });
+            });
 
             services.AddControllersWithViews();
         }
